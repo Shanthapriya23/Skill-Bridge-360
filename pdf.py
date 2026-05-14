@@ -12,7 +12,7 @@ from langdetect import detect
 logging.basicConfig(level=logging.DEBUG)
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyBkU22VyghMpDF_KL7Zjy-p__UTUVwPelY")
+genai.configure(api_key="")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 # Initialize ChromaDB client
