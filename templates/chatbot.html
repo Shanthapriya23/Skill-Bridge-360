@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        video {
+            width: 70%;
+            margin-top: 20px;
+        }
+        textarea {
+            width: 70%;
+            height: 100px;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        p {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Video Chatbot</h2>
+    
+    <!-- Video Section -->
+    <h3>Uploaded Video</h3>
+    <video id="uploadedVideo" controls></video>
+    
+    <!-- Chatbot Input -->
+    <h3>Ask a Question about the Video</h3>
+    <textarea id="userQuery" placeholder="Type your question here..."></textarea>
+    <br>
+    <button onclick="askQuestion()">Get Answer</button>
+    
+    <!-- Chatbot Response -->
+    <h3>Chatbot Response</h3>
+    <p id="chatbotResponse"></p>
+    
+    <script>
+        // Retrieve video URL from sessionStorage
+        document.addEventListener("DOMContentLoaded", function() {
+            const videoUrl = sessionStorage.getItem("uploadedVideo");
+            if (videoUrl) {
+                document.getElementById("uploadedVideo").src = videoUrl;
+            }
+        });
+
+        function askQuestion() {
+            const query = document.getElementById("userQuery").value;
+            if (!query.trim()) {
+                alert("Please enter a question.");
+                return;
+            }
+            
+            fetch("/get_answer", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("chatbotResponse").textContent = data.answer;
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+[
+    {
+        "num_chapter": 0,
+        "title": "What is the Greenhouse Effect?",
+        "start_paragraph_number": 0,
+        "end_paragraph_number": 1,
+        "start_time": 0,
+        "end_time": 37,
+        "subchapters": [
+            {
+                "start_paragraph_number": 0,
+                "title": "What is the Greenhouse Effect?",
+                "start_time": 1
+            }
+        ],
+        "paragraphs": [
+            "What is the greenhouse effect? Earth is a comfortable place for living things, with a temperature that's just right for plants and animals, including humans, to thrive. One reason Earth is so special is the greenhouse effect. A greenhouse is a building with glass walls and a roof, where clear glass allows sunlight to shine in while trapping the sun's heat inside. This is how a greenhouse keeps plants warm even at night and in the winter. The greenhouse effect keeps Earth warm in a similar way."
+        ],
+        "paragraph_timestamps": [
+            0
+        ]
+    },
+    {
+        "num_chapter": 1,
+        "title": "How Does the Greenhouse Effect Work?",
+        "start_paragraph_number": 1,
+        "end_paragraph_number": 2,
+        "start_time": 37,
+        "end_time": 79,
+        "subchapters": [
+            {
+                "start_paragraph_number": 1,
+                "title": "The Atmosphere and Greenhouse Gases",
+                "start_time": 38
+            }
+        ],
+        "paragraphs": [
+            "Earth isn't surrounded by glass, but it is surrounded by a jacket of gases called the atmosphere. In the daytime, the sun shines through the atmosphere, warming Earth's surface. After the sun goes down, Earth's surface cools, releasing heat back into the air, but some of that heat is trapped by the gases in the atmosphere. These heat-trapping gases are called greenhouse gases. Carbon dioxide, water vapor, and methane are all examples of greenhouse gases. Earth needs a balance of greenhouse gases to maintain just the right temperature for living things."
+        ],
+        "paragraph_timestamps": [
+            37
+        ]
+    },
+    {
+        "num_chapter": 2,
+        "title": "Human Impact on the Greenhouse Effect",
+        "start_paragraph_number": 2,
+        "end_paragraph_number": 3,
+        "start_time": 79,
+        "end_time": 79,
+        "subchapters": [],
+        "paragraphs": [
+            "However, some human activities are changing Earth's natural greenhouse effect. For example, burning fossil fuels like coal and oil releases more carbon dioxide into our atmosphere. These extra greenhouse gases can cause the atmosphere to trap more and more heat, leading to a warmer Earth. NASA satellites are constantly measuring the gases in our atmosphere from space, monitoring the changes that are occurring."
+        ],
+        "paragraph_timestamps": [
+            79
+        ]
+    }
+]

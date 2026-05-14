@@ -1,0 +1,98 @@
+/* General styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+}
+
+/* Container for the form */
+.container {
+    text-align: center;
+    margin: 100px auto;
+    width: 50%;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+}
+
+.input-field, .btn {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.btn {
+    background: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #0056b3;
+}
+
+/* Sidebar styles */
+.sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: -250px;  /* Initially hidden */
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.3s ease-in-out;
+    padding-top: 60px;
+}
+
+.sidebar a {
+    padding: 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background: #575757;
+}
+
+/* Show sidebar when active */
+.sidebar.active {
+    left: 0;
+}
+
+/* Close button inside the sidebar */
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 30px;
+    cursor: pointer;
+    color: white;
+}
+
+/* Hamburger menu icon */
+.menu-icon {
+    font-size: 30px;
+    cursor: pointer;
+    padding: 15px;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    color: #333;
+    transition: 0.3s;
+}
+
+.menu-icon:hover {
+    color: #007BFF;
+}

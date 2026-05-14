@@ -1,0 +1,1 @@
+Some materials become sufficiently well-ordered to be magnetic when in the presence of an external magnetic field. In the external field lines, all the electron spins up, but the alignment vanishes once the external field is removed. These kinds of materials are known as paramagnetic.

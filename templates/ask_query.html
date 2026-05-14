@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask a Query</title>
+</head>
+<body>
+    <h1>Ask a Question on the Uploaded PDF</h1>
+    <form action="/ask_query" method="POST">
+        <input type="hidden" id="file_path" name="file_path">
+        <label for="query">Ask a question:</label>
+        <input type="text" id="query" name="query" required>
+        <button type="submit">Get Answer</button>
+    </form>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const params = new URLSearchParams(window.location.search);
+            const filePath = params.get("file_path");
+            if (filePath) {
+                document.getElementById("file_path").value = filePath;
+            }
+        });
+        </script>
+        
+</body>
+</html>

@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Transcription & Dubbing</title>
+  <style>
+    /* Basic Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin-left: 250px;
+      transition: margin-left 0.3s ease-in-out;
+    }
+    /* Sidebar styles */
+    .sidebar {
+      height: 100%;
+      width: 200px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #111;
+      color: white;
+      padding-top: 20px;
+      display: none;
+      transition: all 0.3s ease;
+    }
+    .sidebar a {
+      padding: 16px 16px;
+      text-decoration: none;
+      font-size: 18px;
+      color: white;
+      display: block;
+      transition: background-color 0.3s;
+    }
+    .sidebar a:hover {
+      background-color: #575757;
+    }
+    /* Menu icon */
+    .menu-icon {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 30px;
+      cursor: pointer;
+      z-index: 999;
+    }
+    /* Form styles */
+    form {
+      margin: 50px;
+    }
+    input[type="text"],
+    input[type="file"],
+    select {
+      width: 300px;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    /* Video styles */
+    #processedVideo,
+    #chatbotVideo,
+    #normalVideo {
+      display: none;
+      width: 70%;
+      margin-top: 20px;
+    }
+    h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+    /* Sidebar open */
+    .sidebar.open {
+      display: block;
+    }
+    body.sidebar-open {
+      margin-left: 250px;
+    }
+    /* Frames */
+    .chatbot-frame,
+    .timestamp-frame,
+    .pdf-frame,
+    .ppt-frame,
+    .reel-frame,
+    .summary-video-frame {
+      display: none;
+      margin: 20px;
+    }
+    .visible {
+      display: block;
+    }
+    /* Chapter Navigation */
+    .chapter-buttons {
+      margin-top: 20px;
+    }
+    .chapter-buttons button {
+      margin: 5px;
+      padding: 10px;
+      background-color: #008CBA;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .chapter-buttons button:hover {
+      background-color: #007B9E;
+    }
+    /* Clippings Section */
+    .clipping-buttons {
+      margin-top: 20px;
+    }
+    .clipping-buttons button {
+      display: block;
+      margin: 5px 0;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .clipping-buttons button:hover {
+      background-color: #0056b3;
+    }
+    #clipping-video-container {
+      margin-top: 20px;
+    }
+    #clipping-video {
+      width: 70%;
+    }
+    /* Responsive design */
+    @media screen and (max-width: 768px) {
+      body {
+        margin-left: 0;
+      }
+      .sidebar {
+        width: 200px;
+      }
+      .menu-icon {
+        font-size: 25px;
+      }
+    }
+    .slides-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      padding: 20px;
+    }
+    .slide {
+      width: 60%;
+      max-width: 800px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      background: white;
+      padding: 10px;
+    }
+    img {
+      width: 100%;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div id="mySidebar" class="sidebar">
+    <a href="#"></a>
+    <a href="javascript:void(0)" onclick="closeNav()">Close ×</a>
+    <a href="#">Vernacular Video Dubbing</a>
+    <a href="javascript:void(0)" onclick="showChatbot()">Video Chatbot</a>
+    <a href="javascript:void(0)" onclick="showTimestamps()">Time stamp generation</a>
+    <a href="javascript:void(0)" onclick="showpdf()">Vernacular PDF based chatbot</a>
+    <a href="javascript:void(0)" onclick="showppt()">Highlight PPT creation</a>
+    <a href="javascript:void(0)" onclick="showreel()">Excerpt Reel creation</a>
+    <a href="javascript:void(0)" onclick="showsummary_Video()">summary presentation in your lecturesr's voice</a>
+  </div>
+
+  <!-- Menu Icon -->
+  <span class="menu-icon" onclick="openNav()">&#9776;</span>
+
+  <!-- Main Content -->
+  <h2>Upload a Video or Provide a YouTube Link</h2>
+  <form id="videoForm" enctype="multipart/form-data">
+    <label for="youtube_url">YouTube URL:</label>
+    <input type="text" id="youtube_url" name="youtube_url" placeholder="Enter YouTube URL">
+    <br><br>
+    <label for="video_file">Upload Video:</label>
+    <input type="file" id="video_file" name="video_file" accept="video/*">
+    <br><br>
+    <label for="language">Select Target Language:</label>
+    <select id="language" name="language">
+      <option value="ta">Tamil</option>
+      <option value="hi">Hindi</option>
+      <option value="fr">French</option>
+      <option value="es">Spanish</option>
+    </select>
+    <br><br>
+    <button type="submit">Process Video</button>
+  </form>
+
+  <!-- Processed Video Section -->
+  <h2>Processed Video</h2>
+  <video id="processedVideo" controls>
+    <source id="processedVideoSource" src="" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Transcription Sections -->
+  <h2>Transcription</h2>
+  <p id="transcription"></p>
+  <h2>Translated Transcription</h2>
+  <p id="translated_transcription"></p>
+
+  <!-- Chatbot Section -->
+  <div id="chatbot-frame" class="chatbot-frame">
+    <h2>Video Chatbot</h2>
+    <video id="chatbotVideo" controls>
+      <source src="../static/uploads/downloaded_video.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <video id="normalVideo" controls></video>
+    <label for="userQuestion">Ask a question about the video:</label>
+    <input type="text" id="userQuestion" placeholder="Type your question here">
+    <button id="getAnswerButton">Get Answer</button>
+    <div id="chatbotAnswer" style="margin-top: 20px;">
+      <h3>Answer:</h3>
+      <div id="answerText">Waiting for your question...</div>
+    </div>
+  </div>
+
+  <!-- Timestamp Section -->
+  <div id="timestamp-frame" class="timestamp-frame">
+    <h2>Generate Video Chapters with Timestamps</h2>
+    <label for="utube_url">Enter YouTube URL:</label>
+    <input type="text" id="utube_url" placeholder="Enter the YouTube URL here">
+    <br><br>
+    <label for="timestamp_video_file">Or Upload a Video:</label>
+    <input type="file" id="timestamp_video_file" accept="video/*">
+    <br><br>
+    <label>
+      <input type="checkbox" id="create_clips"> Generate Video Clippings
+    </label>
+    <br><br>
+    <button id="gettimestamp">Get Video Chapters with Timestamps</button>
+    <div id="tsAnswer" style="margin-top: 20px;">
+      <h3>Answer:</h3>
+      <div id="ts_text">Waiting for timestamps and chapters to be generated....</div>
+    </div>
+    <div id="video-container"></div>
+    <div id="chapter-buttons" class="chapter-buttons"></div>
+
+    <!-- Clippings Section -->
+    <div class="clipping-buttons">
+      <h3>Generated Clippings:</h3>
+      <div id="clipping-buttons-container"></div>
+    </div>
+
+    <!-- Clipping Video Player -->
+    <div id="clipping-video-container">
+      <h3>Selected Clipping:</h3>
+      <!-- The video element will be dynamically inserted here -->
+    </div>
+  </div>
+
+  <!-- PDF Section -->
+  <div id="pdf-frame" class="pdf-frame">
+    <h3>Vernacular PDF based Chatbot:</h3>
+    <label for="pdf_file">Upload a PDF</label>
+    <input type="file" id="pdf_file" name="file" accept=".pdf" required>
+    <br><br>
+    <button id="getpdf_answer">Get your questions answered in vernacular Language</button>
+  </div>
+
+  <!-- PPT Section -->
+  <div id="ppt-frame" class="ppt-frame">
+    <h3>PPT created using the Highlights of the Video:</h3>
+    <label for="ppt_youtube_url">YouTube URL:</label>
+    <input type="text" id="ppt_youtube_url" name="ppt_youtube_url" placeholder="Enter YouTube URL">
+    <br><br>
+    <label for="ppt_video_file">Upload Video:</label>
+    <input type="file" id="ppt_video_file" name="ppt_video_file" accept="video/*">
+    <br>
+    <button id="getppt_answer">Get your Summary PPT from the video containing the important bulletin points</button>
+    <div id="ppt_Answer" style="margin-top: 20px;">
+      <h3>Answer:</h3>
+      <div id="ppt_text">Waiting for Summary ppt to be generated....</div>
+    </div>
+    <div id="ppt-container"></div>
+    <h1>📽️ PowerPoint Slides Viewer</h1>
+    <div class="slides-container">
+        {% for image in images %}
+            <div class="slide">
+                <img src="{{ url_for('serve_image', filename=image) }}" alt="Slide">
+            </div>
+        {% endfor %}
+    </div>
+  </div>
+
+  <!-- Reel section -->
+  <div id="reel-frame" class="reel-frame">
+    <h2>Generate Video Chapters with Timestamps</h2>
+    <label for="reel_utube_url">Enter YouTube URL:</label>
+    <input type="text" id="reel_utube_url" placeholder="Enter the YouTube URL here">
+    <br><br>
+    <label for="reel_video_file">Or Upload a Video:</label>
+    <input type="file" id="reel_video_file" accept="video/*">
+    <br><br>
+    <button id="getreel">Get Summary reel of a longer video</button>
+    <div id="reelAnswer" style="margin-top: 20px;">
+      <h3>Answer:</h3>
+      <div id="reel_text">Waiting for Excerpt reel to be generated....</div>
+    </div>
+    <div id="reel-container"></div>
+  </div>
+
+  <!-- Summary video section -->
+  <div id="summary-video-frame" class="summary-video-frame">
+    <h2>Generate Video Chapters with Timestamps</h2>
+
+    <label for="summary_utube_url">Enter YouTube URL:</label>
+    <input type="text" id="summary_utube_url" placeholder="Enter the YouTube URL here">
+    <br><br>
+
+    <label for="summary_video_file">Or Upload a Video:</label>
+    <input type="file" id="summary_video_file" accept="video/*">
+    <br><br>
+
+    <!-- 🔈 Voice Gender Selection -->
+    <label><strong>Select Voice Gender:</strong></label><br>
+    <input type="radio" id="male" name="gender" value="male" checked>
+    <label for="male">Male</label><br>
+    <input type="radio" id="female" name="gender" value="female">
+    <label for="female">Female</label>
+    <br><br>
+
+    <button id="getsummaryvideo">Get Summary video In your lecturer's voice</button>
+
+    <div id="reelAnswer" style="margin-top: 20px;">
+      <h3>Answer:</h3>
+      <div id="summary_video_text">Waiting for summary video to be generated....</div>
+    </div>
+
+    <div id="summary-video-container"></div>
+  </div>
+
+
+  <script>
+    // Sidebar Functions
+    function openNav() {
+      document.getElementById("mySidebar").classList.add("open");
+      document.body.classList.add("sidebar-open");
+    }
+    function closeNav() {
+      document.getElementById("mySidebar").classList.remove("open");
+      document.body.classList.remove("sidebar-open");
+    }
+    function showChatbot() {
+      document.querySelectorAll('h2,p,form,video').forEach(el => el.style.display = 'none');
+      document.getElementById('chatbot-frame').classList.add('visible');
+      document.getElementById('timestamp-frame').classList.remove('visible');
+      document.getElementById('pdf-frame').classList.remove('visible');
+      document.getElementById('ppt-frame').classList.remove('visible');
+      document.getElementById('reel-frame').classList.remove('visible');
+      document.getElementById('summary-video-frame').classList.remove('visible');
+    }
+    function showTimestamps() {
+      document.querySelectorAll('h2,p,form,video').forEach(el => el.style.display = 'none');
+      document.getElementById('timestamp-frame').classList.add('visible');
+      document.getElementById('chatbot-frame').classList.remove('visible');
+      document.getElementById('pdf-frame').classList.remove('visible');
+      document.getElementById('ppt-frame').classList.remove('visible');
+      document.getElementById('reel-frame').classList.remove('visible');
+      document.getElementById('summary-video-frame').classList.remove('visible');
+    }
+    function showpdf() {
+      document.querySelectorAll('h2,p,form,video').forEach(el => el.style.display = 'none');
+      document.getElementById('pdf-frame').classList.add('visible');
+      document.getElementById('timestamp-frame').classList.remove('visible');
+      document.getElementById('chatbot-frame').classList.remove('visible');
+      document.getElementById('ppt-frame').classList.remove('visible');
+      document.getElementById('reel-frame').classList.remove('visible');
+      document.getElementById('summary-video-frame').classList.remove('visible');
+    }
+    function showppt() {
+      document.querySelectorAll('h2,p,form,video').forEach(el => el.style.display = 'none');
+      document.getElementById('pdf-frame').classList.remove('visible');
+      document.getElementById('timestamp-frame').classList.remove('visible');
+      document.getElementById('chatbot-frame').classList.remove('visible');
+      document.getElementById('ppt-frame').classList.add('visible');
+      document.getElementById('reel-frame').classList.remove('visible');
+      document.getElementById('summary-video-frame').classList.remove('visible');
+    }
+    function showreel() {
+      document.querySelectorAll('h2,p,form,video').forEach(el => el.style.display = 'none');
+      document.getElementById('pdf-frame').classList.remove('visible');
+      document.getElementById('timestamp-frame').classList.remove('visible');
+      document.getElementById('chatbot-frame').classList.remove('visible');
+      document.getElementById('ppt-frame').classList.remove('visible');
+      document.getElementById('reel-frame').classList.add('visible');
+      document.getElementById('summary-video-frame').classList.remove('visible');
+
+    }
+    function showsummary_Video()
+    {
+      document.querySelectorAll('h2,p,form,video').forEach(el => el.style.display = 'none');
+      document.getElementById('pdf-frame').classList.remove('visible');
+      document.getElementById('timestamp-frame').classList.remove('visible');
+      document.getElementById('chatbot-frame').classList.remove('visible');
+      document.getElementById('ppt-frame').classList.remove('visible');
+      document.getElementById('reel-frame').classList.remove('visible');
+      document.getElementById('summary-video-frame').classList.add('visible');
+    }
+    // Function to convert seconds to HH:MM:SS format
+    function convertSecondsToHMS(seconds) {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    //pdf vernacular chatbot
+    document.getElementById("getpdf_answer").addEventListener("click", async () => {
+      const fileInput = document.getElementById("pdf_file");
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please upload a PDF first.");
+        return;
+      }
+    
+      const formData = new FormData();
+      formData.append("file", file);
+    
+      const response = await fetch("/get_pdf", {
+        method: "POST",
+        body: formData
+      });
+    
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        alert("Something went wrong while processing the PDF.");
+      }
+    });
+    
+    // Timestamp Generation
+    document.getElementById("gettimestamp").addEventListener("click", function () {
+  const formData = new FormData();
+  const video_url = document.getElementById("utube_url").value;
+  const video_file = document.getElementById("timestamp_video_file").files[0];
+  const create_clips = document.getElementById("create_clips").checked; 
+
+  if (video_url) formData.append("video_url", video_url);
+  if (video_file) formData.append("video_file", video_file);
+  formData.append("create_clips", create_clips); 
+
+  fetch("/get_time_stamp", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.error) {
+        document.getElementById("ts_text").textContent = `Error: ${data.error}`;
+        return;
+      }
+
+      const videoContainer = document.getElementById("video-container");
+      const chapterButtons = document.getElementById("chapter-buttons");
+      videoContainer.innerHTML = "";
+      chapterButtons.innerHTML = "";
+
+      // Declare videoElement at the top level
+      let videoElement = null;
+
+      // Display video
+      if (data.video_type === "youtube" && data.video_id) {
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://www.youtube.com/embed/${data.video_id}`;
+        iframe.width = "560";
+        iframe.height = "315";
+        iframe.allowFullscreen = true;
+        iframe.frameBorder = "0";
+        videoContainer.appendChild(iframe);
+      } else if (video_file) {
+        videoElement = document.createElement("video");
+        videoElement.src = URL.createObjectURL(video_file);
+        videoElement.controls = true;
+        videoElement.style.width = "70%";
+        videoContainer.appendChild(videoElement);
+
+        videoElement.addEventListener("loadedmetadata", () => {
+          console.log("Video metadata loaded. Video is ready.");
+        });
+      }
+
+      // Display chapters and subchapters
+      if (data.chapters) {
+        let answerText = "";
+        data.chapters.forEach((chapter) => {
+          const chapterTime = convertSecondsToHMS(chapter.start_time);
+          answerText += `<strong>${chapterTime} - ${chapter.title}</strong><br>`;
+          if (chapter.subchapters && chapter.subchapters.length > 0) {
+            chapter.subchapters.forEach((subchapter) => {
+              const subchapterTime = convertSecondsToHMS(subchapter.start_time);
+              answerText += `&nbsp;&nbsp;${subchapterTime} - ${subchapter.title}<br>`;
+            });
+          }
+        });
+        document.getElementById("ts_text").innerHTML = answerText;
+
+        // Add chapter and subchapter navigation buttons
+        data.chapters.forEach((chapter) => {
+          const chapterButton = document.createElement("button");
+          const chapterTime = convertSecondsToHMS(chapter.start_time);
+          chapterButton.textContent = `${chapterTime} - ${chapter.title}`;
+          chapterButton.style.display = "block";
+          chapterButton.style.margin = "5px 0";
+          chapterButton.style.fontWeight = "bold";
+          chapterButton.addEventListener("click", () => {
+            if (data.video_type === "youtube" && data.video_id) {
+              const iframe = document.querySelector("iframe");
+              iframe.src = `https://www.youtube.com/embed/${data.video_id}?start=${Math.floor(chapter.start_time)}`;
+            } else if (videoElement) {
+              videoElement.currentTime = chapter.start_time;
+              videoElement.play();
+            }
+          });
+          chapterButtons.appendChild(chapterButton);
+
+          // Subchapter buttons
+          if (chapter.subchapters && chapter.subchapters.length > 0) {
+            chapter.subchapters.forEach((subchapter) => {
+              const subchapterButton = document.createElement("button");
+              const subchapterTime = convertSecondsToHMS(subchapter.start_time);
+              subchapterButton.textContent = `  ${subchapterTime} - ${subchapter.title}`;
+              subchapterButton.style.display = "block";
+              subchapterButton.style.margin = "5px 20px";
+              subchapterButton.addEventListener("click", () => {
+                if (data.video_type === "youtube" && data.video_id) {
+                  const iframe = document.querySelector("iframe");
+                  iframe.src = `https://www.youtube.com/embed/${data.video_id}?start=${Math.floor(subchapter.start_time)}`;
+                } else if (videoElement) {
+                  videoElement.currentTime = subchapter.start_time;
+                  videoElement.play();
+                }
+              });
+              chapterButtons.appendChild(subchapterButton);
+            });
+          }
+        });
+      } else {
+        document.getElementById("ts_text").textContent =
+          "No chapters found for this video.";
+      }
+      // Display clippings if they exist (with multi-format support)
+      if (data.clippings && data.clippings.length > 0) {
+        const clippingButtonsContainer = document.getElementById("clipping-buttons-container");
+        const clippingVideoContainer = document.getElementById("clipping-video-container");
+        clippingButtonsContainer.innerHTML = "";
+        clippingVideoContainer.innerHTML = "";
+
+        // Supported video formats
+        const supportedFormats = ['mp4', 'webm', 'ogg'];
+        let hasValidClippings = false;
+
+        data.clippings.forEach((clipping) => {
+          const clippingName = clipping.split("/").pop();
+          const extension = clippingName.split('.').pop().toLowerCase();
+
+          // Only process supported formats
+          if (supportedFormats.includes(extension)) {
+            hasValidClippings = true;
+            const displayName = clippingName.slice(0, -(extension.length + 1)); // Remove extension
+            
+            const button = document.createElement("button");
+            button.textContent = displayName;
+            button.style.margin = "5px";
+            button.style.padding = "5px 10px";
+
+            button.addEventListener("click", () => {
+              clippingVideoContainer.innerHTML = "";
+              
+              const videoElement = document.createElement("video");
+              videoElement.width = 640;
+              videoElement.height = 360;
+              videoElement.controls = true;
+              videoElement.style.maxWidth = "100%";
+
+              const sourceElement = document.createElement("source");
+              // Add cache busting parameter
+              sourceElement.src = `/clippings/output_clips/${clippingName}?t=${new Date().getTime()}`;
+              
+              // Set appropriate MIME type based on extension
+              switch(extension) {
+                case 'mp4':
+                  sourceElement.type = "video/mp4";
+                  break;
+                case 'webm':
+                  sourceElement.type = "video/webm";
+                  break;
+                case 'ogg':
+                  sourceElement.type = "video/ogg";
+                  break;
+              }
+
+              videoElement.appendChild(sourceElement);
+              clippingVideoContainer.appendChild(videoElement);
+
+              // Attempt to play the video
+              videoElement.load();
+              videoElement.play().catch(error => {
+                console.error("Video play failed:", error);
+                clippingVideoContainer.innerHTML = `<p>Error playing ${clippingName}</p>`;
+              });
+
+              // Error handling
+              videoElement.addEventListener('error', () => {
+                console.error("Video loading error:", videoElement.error);
+                clippingVideoContainer.innerHTML = `<p>Error loading ${clippingName}</p>`;
+              });
+            });
+
+            clippingButtonsContainer.appendChild(button);
+          } else {
+            console.warn(`Unsupported video format: ${extension} (file: ${clippingName})`);
+          }
+        });
+
+        if (!hasValidClippings) {
+          clippingButtonsContainer.innerHTML = "<p>No supported video clips found</p>";
+        }
+      } else {
+        console.log("No clippings found in data");
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      document.getElementById("ts_text").textContent =
+        "An error occurred while processing the video.";
+    });
+});
+
+    // Video Processing Form
+    document.getElementById("videoForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      let formData = new FormData(this);
+      fetch("/process_video", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.dubbed_video) {
+          document.getElementById("processedVideoSource").src = data.dubbed_video;
+          document.getElementById("processedVideo").load();
+          document.getElementById("processedVideo").style.display = "block";
+        }
+        if (data.downloaded_video) {
+          document.getElementById("normalVideo").src = data.downloaded_video;
+          document.getElementById("normalVideo").style.display = "block";
+        }
+        document.getElementById("transcription").textContent = data.transcription;
+        document.getElementById("translated_transcription").textContent = data.translated_transcription;
+      })
+      .catch(error => console.error("Error:", error));
+    });
+
+    // Chatbot Functionality
+    document.getElementById("getAnswerButton").addEventListener("click", function() {
+      const userQuestion = document.getElementById("userQuestion").value;
+      fetch("/get_answer", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ question: userQuestion })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("answerText").textContent = data.error ? `Error: ${data.error}` : data.answer;
+      })
+      .catch(error => console.error("Error:", error));
+    });
+
+    // PPT Processing Form
+    document.getElementById("getppt_answer").addEventListener("click", function() {
+      const formData = new FormData();
+      const video_url = document.getElementById("ppt_youtube_url").value;
+      const video_file = document.getElementById("ppt_video_file").files[0];
+
+      if (video_url) formData.append("ppt_youtube_url", video_url);
+      if (video_file) formData.append("ppt_video_file", video_file);
+
+      fetch("/get_ppt", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.ppt_url) {
+          document.getElementById("ppt_text").innerHTML =
+            `✅ PPT generated successfully! <a href="${data.ppt_url}" download>Download PPT</a>`;
+        }
+
+        // Display slides dynamically
+        const slidesContainer = document.querySelector(".slides-container");
+        slidesContainer.innerHTML = "";  // Clear previous images
+
+        if (data.slides && data.slides.length > 0) {
+          data.slides.forEach(slide => {
+            const imgElement = document.createElement("img");
+            imgElement.src = slide;
+            imgElement.alt = "Slide";
+            imgElement.classList.add("slide");
+            slidesContainer.appendChild(imgElement);
+          });
+        }
+      })
+      .catch(error => {
+        document.getElementById("ppt_text").textContent = `Error: ${error.message}`;
+      });
+    });
+
+    // Reel Generation
+    document.getElementById("getreel").addEventListener("click", function() {
+      const formData = new FormData();
+      const video_url = document.getElementById("reel_utube_url").value;
+      const video_file = document.getElementById("reel_video_file").files[0];
+
+      if (video_url) formData.append("reel_utube_url", video_url);
+      if (video_file) formData.append("reel_video_file", video_file);
+
+      fetch("/get_reel", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          document.getElementById("reel_text").textContent = `Error: ${data.error}`;
+          return;
+        }
+        const reelContainer = document.getElementById("reel-container");
+        reelContainer.innerHTML = "";
+
+        const videoElement = document.createElement("video");
+        videoElement.id = "summaryVideo";
+        videoElement.width = 360;
+        videoElement.height = 640;
+        videoElement.controls = true;
+
+        const sourceElement = document.createElement("source");
+        sourceElement.src = `${data.reel_url}?t=${new Date().getTime()}`; // Cache busting
+        sourceElement.type = "video/mp4";
+
+        videoElement.appendChild(sourceElement);
+        reelContainer.appendChild(videoElement);
+
+        // Reload video to force refresh
+        const summaryVideo = document.getElementById("summaryVideo");
+        summaryVideo.load();
+      })
+      .catch(error => document.getElementById("reel_text").textContent = `Error: ${error}`);
+    });
+
+    //summary presentation in lecturer's voice
+    document.getElementById("getsummaryvideo").addEventListener("click", function() {
+      const formData = new FormData();
+      const video_url = document.getElementById("summary_utube_url").value;
+      const video_file = document.getElementById("summary_video_file").files[0];
+      const gender = document.querySelector('input[name="gender"]:checked').value;  
+
+      if (video_url) formData.append("summary_utube_url", video_url);
+      if (video_file) formData.append("summary_video_file", video_file);
+      formData.append("gender", gender);  // 👈 append gender
+      
+      fetch("/get_summary_video", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          document.getElementById("summary_video_text").textContent = `Error: ${data.error}`;
+          return;
+        }
+        const summaryContainer = document.getElementById("summary-video-container");
+        summaryContainer.innerHTML = "";
+
+        const videoElement = document.createElement("video");
+        videoElement.id = "summarylecture";
+        videoElement.width = 500;
+        videoElement.height = 500;
+        videoElement.controls = true;
+
+        const sourceElement = document.createElement("source");
+        sourceElement.src =  data.video_url;
+        sourceElement.type = "video/mp4";
+
+        videoElement.appendChild(sourceElement);
+        summaryContainer.appendChild(videoElement);
+
+        // Reload video to force refresh
+        const summarylecture = document.getElementById("summarylecture");
+        summarylecture.load();
+      })
+      .catch(error => document.getElementById("summary_video_text").textContent = `Error: ${error}`);
+    });
+  </script>
+</body>
+</html>
